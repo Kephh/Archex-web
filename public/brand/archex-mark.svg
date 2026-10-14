@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="archex-mark-title archex-mark-desc">
+  <title id="archex-mark-title">Archex</title>
+  <desc id="archex-mark-desc">Archex monogram — a geometric letter A formed by two monolithic pillars joined at a precise apex, with a horizontal void creating an architectural crossbar.</desc>
+  <!--
+    ARCHEX brand mark — monolithic arch A
+    Two tapered pillars converging at a sharp apex, cut by a
+    horizontal negative-space crossbar. Evokes precision,
+    permanence, and structural intelligence.
+
+    Fill: midnight navy #111C2E (Archex ink colour).
+    Override fill attribute for ivory/white/dark variants.
+    No gradients, no external fonts, no raster content.
+  -->
+  <path
+    fill="#111C2E"
+    fill-rule="evenodd"
+    d="
+      M256 48
+      L108 464 L176 464
+      L208 384 L304 384 L336 464 L404 464
+      Z
+
+      M224 324
+      L288 324
+      L256 232
+      Z
+    "
+  />
+</svg>

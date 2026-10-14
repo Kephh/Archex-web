@@ -1,0 +1,732 @@
+"use client";
+
+import Link from "next/link";
+import { ArrowRight, ArrowUpRight, BrainCircuit, Code2, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { Container, Section } from "@/components/layout/container";
+import { Button } from "@/components/ui/button";
+import { WorkflowDiagram } from "@/components/sections/workflow-diagram";
+import { ContentRail, type ContentRailItem } from "@/components/sections/content-rail";
+
+const needs = [
+  {
+    id: "product",
+    label: "Build a new product",
+    ctaLabel: "Explore product engineering",
+    description:
+      "You need a product built around a real problem, a clear user journey, and a foundation that stays maintainable as it grows.",
+    service: "Product engineering and application design",
+    steps: [
+      "Clarify the user problem, business constraints, and delivery priorities.",
+      "Define the product scope, technical approach, and release plan.",
+      "Build the core product with integration points, observability, and room to evolve."
+    ],
+    href: "/services/custom-software-development"
+  },
+  {
+    id: "ai",
+    label: "Bring AI into an existing workflow",
+    ctaLabel: "Explore AI integration",
+    description:
+      "Have a workflow that takes too much manual effort? We can help assess where AI fits, connect it to the systems your team already uses, and engineer the surrounding software needed to make it useful.",
+    service: "AI integration and workflow design",
+    steps: [
+      "Identify which workflow is worth automating and where human review is still required.",
+      "Map the data sources, integrations, and operational constraints that make the system reliable.",
+      "Ship a practical AI experience with evaluation, fallbacks, and clear ownership."
+    ],
+    href: "/ai-solutions"
+  },
+  {
+    id: "modernize",
+    label: "Improve or modernize existing software",
+    ctaLabel: "Explore modernization",
+    description:
+      "The issue may be maintenance, slow delivery, brittle integrations, or a codebase that has become harder to change without risk.",
+    service: "Modernization and technical improvement",
+    steps: [
+      "Review the current system, its constraints, and the parts causing the most friction.",
+      "Stabilize the critical path with tests, dependency clarity, and better release habits.",
+      "Improve the architecture in deliberate increments instead of defaulting to a risky rewrite."
+    ],
+    href: "/modernization"
+  },
+  {
+    id: "capacity",
+    label: "Add engineering capacity to an ongoing project",
+    ctaLabel: "Explore engagement models",
+    description:
+      "You need extra technical help without losing momentum, clarity, or quality on an active product or platform initiative.",
+    service: "Ongoing engineering partnership",
+    steps: [
+      "Understand the current work, delivery rhythm, and constraints on the team.",
+      "Fill the gaps with focused engineering capacity and a clear product decision path.",
+      "Support changes, reviews, and iteration without disrupting the underlying delivery plan."
+    ],
+    href: "/engagement-models"
+  }
+] as const;
+
+const capabilityRows = [
+  {
+    id: "build",
+    label: "Build",
+    icon: Code2,
+    summary: "Product strategy, application engineering, integrations, and the foundations that keep a product maintainable.",
+    problems: [
+      "A new product needs to be built with real user needs in mind.",
+      "A team needs engineering capacity for design, delivery, and integration work.",
+      "A software platform needs clearer structure and better foundations for growth."
+    ],
+    details: [
+      "Product discovery and planning with technical constraints in view.",
+      "Application engineering, APIs, data flows, and integration design.",
+      "Delivery work that keeps the product maintainable after launch."
+    ],
+    href: "/services/custom-software-development"
+  },
+  {
+    id: "integrate",
+    label: "Integrate",
+    icon: BrainCircuit,
+    summary: "Workflow assessment, data access, AI features, and production guardrails for tools people actually use.",
+    problems: [
+      "A team has a repetitive task that could be supported by AI.",
+      "An internal workflow needs to connect to business data and existing systems.",
+      "A model-backed experience needs clearer evaluation, security, and review."
+    ],
+    details: [
+      "Assessment of where AI can earn its place in a real workflow.",
+      "Integration with existing software, data sources, and operational tooling.",
+      "Production decisions around reliability, review coverage, and user trust."
+    ],
+    href: "/ai-solutions"
+  },
+  {
+    id: "modernize",
+    label: "Modernize",
+    icon: RefreshCw,
+    summary: "Codebase improvement, architecture clarity, reliability, and incremental changes to systems that still matter.",
+    problems: [
+      "The application is harder to change than it should be.",
+      "A system has brittle integrations or slow release cycles.",
+      "Technology debt is getting in the way of business priorities."
+    ],
+    details: [
+      "Code and dependency review to understand the real risk and impact.",
+      "Targeted refactoring, test coverage, and architecture improvements.",
+      "Incremental change that increases safety without defaulting to a large rewrite."
+    ],
+    href: "/modernization"
+  }
+] as const;
+
+const aiStages = [
+  {
+    id: "workflow",
+    title: "Identify a useful workflow",
+    body: "We look for work that is repetitive, rules-heavy, or difficult to scale without a lot of manual effort. The goal is to solve a real operational problem, not force AI into a workflow that does not need it."
+  },
+  {
+    id: "data",
+    title: "Connect the necessary data and systems",
+    body: "AI depends on real inputs and clear boundaries. We map the data sources, permissions, integrations, and surrounding software needed to make the experience useful and reviewable."
+  },
+  {
+    id: "experience",
+    title: "Engineer the AI-enabled experience",
+    body: "The interaction model matters as much as the model itself. We design the prompts, flows, decision points, and handoffs so the tool helps people without creating confusion or hidden risk."
+  },
+  {
+    id: "evaluate",
+    title: "Evaluate behavior and prepare for real use",
+    body: "We test failure modes, edge cases, data quality, and review steps so the system behaves as expected in practice and can be improved as usage reveals new needs."
+  }
+] as const;
+
+const modernizationTracks = [
+  {
+    id: "dependency",
+    headline: "Before: Changes are difficult to make because key dependencies are poorly understood.",
+    approach: "Approach: Map the relevant dependencies, establish appropriate tests, and improve the affected components incrementally.",
+    direction: "Potential direction: A clearer codebase and a safer path for continued development."
+  },
+  {
+    id: "release",
+    headline: "Before: Release work is slower than it should be because testing and deployment are fragile.",
+    approach: "Approach: Tighten the release path, reduce hidden risk, and improve the quality checks around the parts of the system that change most often.",
+    direction: "Potential direction: Better confidence in shipping and more predictable operational flow."
+  },
+  {
+    id: "integration",
+    headline: "Before: Fragile integrations and unclear data boundaries make a change feel costly before it starts.",
+    approach: "Approach: Separate the core concerns, tighten the interfaces, and reduce the number of points where a small change triggers a large risk.",
+    direction: "Potential direction: Less surprise, easier maintenance, and clearer ownership of system behavior."
+  }
+] as const;
+
+const workStages = [
+  {
+    id: "understand",
+    title: "Understand the problem",
+    body: "We clarify the business goal, technical constraints, users, and what success actually needs to look like."
+  },
+  {
+    id: "scope",
+    title: "Agree on scope and priorities",
+    body: "We define the initial boundary, the biggest risks, and the work that creates the most value in the first phase."
+  },
+  {
+    id: "design",
+    title: "Design and engineer the solution",
+    body: "The work is shaped around real product and operational needs, supported by clear technical decisions and review points."
+  },
+  {
+    id: "deliver",
+    title: "Test, deliver, and improve",
+    body: "We release in reasonable increments, gather evidence, and keep improving the system with knowledge that is already in hand."
+  }
+] as const;
+
+const serviceRailItems: ContentRailItem[] = [
+  {
+    eyebrow: "Build",
+    title: "Custom software development",
+    body: "Turn a product idea or business requirement into software people can use, maintain, and build on.",
+    href: "/services/custom-software-development",
+    meta: "View service"
+  },
+  {
+    eyebrow: "Integrate",
+    title: "AI integration engineering",
+    body: "Connect AI and existing systems to workflows where they can solve a real problem.",
+    href: "/services/ai-integration",
+    meta: "View service"
+  },
+  {
+    eyebrow: "Modernize",
+    title: "Application modernization",
+    body: "Improve architecture, maintainability, and reliability without defaulting to a complete rewrite.",
+    href: "/services/application-modernization",
+    meta: "View service"
+  },
+  {
+    eyebrow: "Support",
+    title: "Ongoing engineering",
+    body: "Extend your team's capacity to ship improvements and support an evolving product.",
+    href: "/engagement-models",
+    meta: "View engagement models"
+  }
+];
+
+const industryRailItems: ContentRailItem[] = [
+  {
+    eyebrow: "Industry pattern",
+    title: "Operations-heavy businesses",
+    body: "Software for scheduling, intake, approvals, reporting, and workflows where reliability matters more than novelty.",
+    href: "/industries/operations-heavy-businesses",
+    meta: "Explore industry pattern"
+  },
+  {
+    eyebrow: "Industry pattern",
+    title: "Software product teams",
+    body: "Product engineering support for teams that need delivery capacity, AI integration, modernization, or stronger technical foundations.",
+    href: "/industries/software-product-teams",
+    meta: "Explore industry pattern"
+  }
+];
+
+const workRailItems: ContentRailItem[] = [
+  {
+    eyebrow: "Illustrative case study",
+    title: "AI-assisted intake workflow",
+    body: "An illustrative workflow pattern for document intake, review queues, model evaluation, and human oversight.",
+    href: "/work/ai-assisted-intake-workflow",
+    meta: "View example"
+  },
+  {
+    eyebrow: "Illustrative case study",
+    title: "Legacy operations platform modernization",
+    body: "An illustrative modernization pattern for stabilizing a brittle operational system before migration decisions.",
+    href: "/work/legacy-operations-platform",
+    meta: "View example"
+  },
+  {
+    eyebrow: "Engineering approach",
+    title: "Product platform foundation",
+    body: "A product engineering approach shaped around maintainability, integrations, and a cleaner path from first release to growth.",
+    href: "/services/custom-software-development",
+    meta: "View service"
+  }
+];
+
+const insightRailItems: ContentRailItem[] = [
+  {
+    eyebrow: "AI engineering",
+    title: "AI integration needs evaluation before confidence",
+    body: "Why AI features need examples, measurement, monitoring, and human review paths before they become dependable product behavior.",
+    href: "/insights/ai-integration-needs-evaluation",
+    meta: "1 min read"
+  },
+  {
+    eyebrow: "Modernization",
+    title: "Modernization without the rewrite reflex",
+    body: "Rewrites are sometimes right, but many systems improve faster through tests, boundaries, observability, and incremental migration.",
+    href: "/insights/modernization-without-rewrite-reflex",
+    meta: "1 min read"
+  }
+];
+
+export default function HomePage() {
+  const [selectedNeed, setSelectedNeed] = useState<number>(1);
+  const [selectedCapability, setSelectedCapability] = useState<number>(0);
+  const [selectedAiStage, setSelectedAiStage] = useState<number>(0);
+  const [selectedModernization, setSelectedModernization] = useState<number>(0);
+  const [selectedStage, setSelectedStage] = useState<number>(0);
+
+  const activeNeed = needs[selectedNeed];
+  const activeCapability = capabilityRows[selectedCapability];
+  const activeAiStage = aiStages[selectedAiStage];
+  const activeModernization = modernizationTracks[selectedModernization];
+  const activeWorkStage = workStages[selectedStage];
+
+  return (
+    <>
+      <section className="relative overflow-hidden border-b border-border">
+        <Container className="grid min-h-[calc(100vh-4.5rem)] gap-10 py-8 sm:gap-12 sm:py-10 md:grid-cols-[1.05fr_0.95fr] md:items-start md:gap-12 lg:gap-16 lg:py-12">
+          <div className="max-w-4xl">
+            <p className="reveal-on-load font-mono text-xs uppercase tracking-[0.22em] text-olive">
+              SOFTWARE ENGINEERING · AI INTEGRATION · MODERNIZATION
+            </p>
+            <h1 className="reveal-on-load reveal-on-load-delay-1 mt-6 max-w-[11ch] font-serif text-[clamp(3rem,5.4vw,5.75rem)] leading-[0.96] tracking-[-0.04em]">
+              Build what’s next. Improve what’s already there.
+            </h1>
+            <p className="reveal-on-load reveal-on-load-delay-2 mt-6 max-w-2xl text-lg leading-8 text-muted sm:text-xl">
+              Archex builds software products, integrates AI into existing workflows, and helps
+              businesses make their current systems more useful, reliable, and ready for what comes
+              next.
+            </p>
+            <div className="reveal-on-load reveal-on-load-delay-3 mt-7 flex flex-col gap-3 sm:flex-row">
+              <Button href="/start-project">Discuss your project</Button>
+              <Button href="/services" variant="secondary">
+                Explore our capabilities
+              </Button>
+            </div>
+          </div>
+          <div className="reveal-on-load reveal-on-load-delay-2 relative mx-auto w-full max-w-2xl">
+            <WorkflowDiagram />
+            <p className="mt-6 max-w-sm text-sm leading-6 text-muted">
+              A practical view of the work: understand the system, choose a direction, build with
+              constraints in mind, and improve based on what the real use reveals.
+            </p>
+          </div>
+        </Container>
+      </section>
+
+      <Section className="bg-surface">
+        <Container>
+          <ContentRail
+            eyebrow="What we do"
+            title="Engineering for what comes next."
+            description="From new products to practical AI integration and stronger existing systems, we help businesses make the next useful move."
+            viewAllHref="/services"
+            viewAllLabel="View all services"
+            items={serviceRailItems}
+          />
+        </Container>
+      </Section>
+
+      <Section>
+        <Container>
+          <ContentRail
+            eyebrow="Who we help"
+            title="Different industries. Real engineering challenges."
+            description="Explore the business contexts and software challenges Archex can help address."
+            viewAllHref="/industries"
+            viewAllLabel="View all industries"
+            items={industryRailItems}
+          />
+        </Container>
+      </Section>
+
+      <Section>
+        <Container>
+          <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
+                Start here
+              </p>
+              <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+                Start with the problem, not the technology.
+              </h2>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface p-4 sm:p-6">
+              <div className="grid gap-2 sm:grid-cols-2" role="tablist" aria-label="Project needs selector">
+                {needs.map((need, index) => (
+                  <button
+                    key={need.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={selectedNeed === index}
+                    aria-controls="need-panel"
+                    onClick={() => setSelectedNeed(index)}
+                    className={[
+                      "rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors",
+                      selectedNeed === index
+                        ? "border-forest bg-surface-muted text-ink"
+                        : "border-border bg-transparent text-muted hover:border-forest/50 hover:text-ink"
+                    ].join(" ")}
+                  >
+                    {need.label}
+                  </button>
+                ))}
+              </div>
+
+              <div id="need-panel" role="tabpanel" className="mt-6 border-t border-border pt-6">
+                <p className="font-mono text-xs uppercase tracking-[0.18em] text-olive">
+                  Relevant service
+                </p>
+                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+                  {activeNeed.label}
+                </h3>
+                <p className="mt-4 text-base leading-7 text-muted">{activeNeed.description}</p>
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-[0.94fr_1.06fr]">
+                  <div>
+                    <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                      Service fit
+                    </p>
+                    <p className="mt-2 text-base font-medium">{activeNeed.service}</p>
+                  </div>
+                  <div>
+                    <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                      Practical next steps
+                    </p>
+                    <ul className="mt-2 space-y-2 text-sm leading-6 text-muted">
+                      {activeNeed.steps.map((step) => (
+                        <li key={step} className="flex gap-2">
+                          <span className="mt-1 size-2 rounded-full bg-olive" aria-hidden="true" />
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button href={activeNeed.href}>{activeNeed.ctaLabel}</Button>
+                  <Link
+                    href="/start-project"
+                    className="inline-flex items-center gap-2 rounded-md border border-forest bg-forest px-4 py-3 text-sm font-semibold text-on-forest shadow-[0_8px_20px_rgba(17,28,46,0.12)] transition-colors hover:bg-forest-hover"
+                  >
+                    Talk with Archex <ArrowRight size={16} aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="bg-surface">
+        <Container>
+          <div className="max-w-3xl">
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
+              Capabilities
+            </p>
+            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+              The engineering behind better software.
+            </h2>
+          </div>
+
+          <div className="mt-10 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="space-y-3 lg:sticky lg:top-24">
+              {capabilityRows.map((item, index) => {
+                const Icon = item.icon;
+                const isSelected = selectedCapability === index;
+
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setSelectedCapability(index)}
+                    className={[
+                      "flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-colors",
+                      isSelected ? "border-forest bg-surface text-ink" : "border-border bg-transparent text-muted hover:border-forest/60"
+                    ].join(" ")}
+                    aria-pressed={isSelected}
+                  >
+                    <div className="mt-1 rounded-full bg-surface-muted p-2 text-forest">
+                      <Icon size={18} aria-hidden="true" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-xl font-semibold tracking-[-0.02em] text-ink">
+                          {item.label}
+                        </span>
+                        <ArrowUpRight size={16} className="text-forest" aria-hidden="true" />
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-muted">{item.summary}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 lg:min-h-[31rem]">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-mono text-xs uppercase tracking-[0.18em] text-olive">
+                  {activeCapability.label}
+                </p>
+                <Link href={activeCapability.href} className="inline-flex items-center gap-2 text-sm font-semibold text-forest">
+                  Learn more <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </div>
+
+              <h3 className="mt-4 text-3xl font-semibold tracking-[-0.02em] sm:text-4xl">
+                {activeCapability.summary}
+              </h3>
+
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
+                <div>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                    Problems it addresses
+                  </p>
+                  <ul className="mt-3 space-y-3 text-sm leading-6 text-muted">
+                    {activeCapability.problems.map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span className="mt-2 size-2 rounded-full bg-olive" aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                    Typical engagement work
+                  </p>
+                  <ul className="mt-3 space-y-3 text-sm leading-6 text-muted">
+                    {activeCapability.details.map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span className="mt-2 size-2 rounded-full bg-forest" aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      <Section>
+        <Container className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
+              AI approach
+            </p>
+            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+              Use AI where it earns its place.
+            </h2>
+            <p className="mt-5 max-w-xl text-base leading-7 text-muted">
+              We help businesses identify useful applications of AI, connect them to existing software
+              and workflows, and address the real issues around data access, reliability, evaluation,
+              security, and operational fit.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-surface p-5">
+            <div className="grid gap-3 sm:grid-cols-2" role="tablist" aria-label="AI workflow stages">
+              {aiStages.map((stage, index) => (
+                <button
+                  key={stage.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedAiStage === index}
+                  onClick={() => setSelectedAiStage(index)}
+                  className={[
+                    "rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors",
+                    selectedAiStage === index
+                      ? "border-forest bg-surface-muted text-ink"
+                      : "border-border bg-transparent text-muted hover:border-forest/50 hover:text-ink"
+                  ].join(" ")}
+                >
+                  {stage.title}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6 min-h-[13rem] rounded-xl border border-border bg-surface-muted p-5" role="tabpanel">
+              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                Selected stage
+              </p>
+              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
+                {activeAiStage.title}
+              </h3>
+              <p className="mt-4 text-base leading-7 text-muted">{activeAiStage.body}</p>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="bg-surface">
+        <Container>
+          <div className="max-w-3xl">
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
+              Modernization
+            </p>
+            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+              Your existing software may need improvement, not replacement.
+            </h2>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="space-y-3">
+              {modernizationTracks.map((track, index) => (
+                <button
+                  key={track.id}
+                  type="button"
+                  onClick={() => setSelectedModernization(index)}
+                  className={[
+                    "w-full rounded-2xl border p-4 text-left transition-colors",
+                    selectedModernization === index
+                      ? "border-forest bg-surface text-ink"
+                      : "border-border bg-transparent text-muted hover:border-forest/50 hover:text-ink"
+                  ].join(" ")}
+                  aria-pressed={selectedModernization === index}
+                >
+                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                    Scenario {index + 1}
+                  </p>
+                  <p className="mt-2 text-base font-medium leading-7">{track.headline}</p>
+                </button>
+              ))}
+            </div>
+
+            <div className="rounded-2xl border border-border bg-surface p-6 lg:min-h-[27rem]">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-olive">
+                Current situation
+              </p>
+              <p className="mt-4 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+                {activeModernization.headline}
+              </p>
+
+              <div className="mt-6 space-y-5">
+                <div className="rounded-xl border border-border bg-surface-muted p-4">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                    Approach
+                  </p>
+                  <p className="mt-3 text-base leading-7 text-muted">{activeModernization.approach}</p>
+                </div>
+                <div className="rounded-xl border border-border p-4">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                    Potential direction
+                  </p>
+                  <p className="mt-3 text-base leading-7 text-muted">
+                    {activeModernization.direction}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      <Section>
+        <Container>
+          <div className="mb-8 max-w-3xl">
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
+              How we work
+            </p>
+            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+              Clear decisions. Steady progress. Maintainable results.
+            </h2>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <div className="space-y-3">
+              {workStages.map((stage, index) => (
+                <button
+                  key={stage.id}
+                  type="button"
+                  onClick={() => setSelectedStage(index)}
+                  className={[
+                    "w-full rounded-2xl border p-4 text-left transition-colors",
+                    selectedStage === index
+                      ? "border-forest bg-surface text-ink"
+                      : "border-border bg-transparent text-muted hover:border-forest/50 hover:text-ink"
+                  ].join(" ")}
+                  aria-pressed={selectedStage === index}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-olive">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <ArrowUpRight size={16} className="text-forest" aria-hidden="true" />
+                  </div>
+                  <p className="mt-3 text-lg font-semibold tracking-[-0.02em]">{stage.title}</p>
+                </button>
+              ))}
+            </div>
+
+            <div className="rounded-2xl border border-border bg-surface-muted p-6 lg:min-h-[14rem]">
+              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
+                Selected stage
+              </p>
+              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+                {activeWorkStage.title}
+              </h3>
+              <p className="mt-4 text-base leading-7 text-muted">{activeWorkStage.body}</p>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="bg-surface">
+        <Container>
+          <ContentRail
+            eyebrow="Selected work"
+            title="The problem shapes the solution."
+            description="Explore engineering approaches, product decisions, and examples of the work that goes into building and improving software."
+            viewAllHref="/work"
+            viewAllLabel="View all work"
+            items={workRailItems}
+          />
+        </Container>
+      </Section>
+
+      <Section>
+        <Container>
+          <ContentRail
+            eyebrow="Insights"
+            title="Ideas worth building on."
+            description="Practical thinking on software engineering, AI integration, modernization, and the decisions behind better systems."
+            viewAllHref="/insights"
+            viewAllLabel="View all insights"
+            items={insightRailItems}
+          />
+        </Container>
+      </Section>
+
+      <section className="bg-forest py-16 text-on-forest sm:py-20">
+        <Container className="grid gap-8 md:grid-cols-[1.2fr_auto] md:items-center">
+          <div>
+            <h2 className="font-serif text-4xl leading-tight sm:text-5xl">
+              Have something worth building—or something that needs fixing?
+            </h2>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-on-forest/80">
+              Tell us what you&apos;re working on, where you&apos;re getting stuck, and what
+you&apos;d like to improve. We&apos;ll use that context to understand the problem and
+discuss a practical next step.
+            </p>
+          </div>
+          <Button href="/start-project" variant="secondary" className="bg-surface text-ink">
+            Start a conversation
+          </Button>
+        </Container>
+      </section>
+    </>
+  );
+}
