@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
-import { getEntries } from "@/lib/content/loader";
+import { getEntriesAsync } from "@/lib/content/repository";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/services",
@@ -19,9 +19,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/privacy",
     "/terms"
   ];
-  const entries = ["services", "modernization", "industries", "work", "insights"].flatMap((kind) =>
-    getEntries(kind as never)
-  );
+  const entries = (
+    await Promise.all(
+      ["services", "modernization", "industries", "work", "insights"].map((kind) =>
+        getEntriesAsync(kind as "services" | "modernization" | "industries" | "work" | "insights")
+      )
+    )
+  ).flat();
 
   const staticEntries = staticRoutes.map((route) => ({
     url: `${siteConfig.url}${route}`

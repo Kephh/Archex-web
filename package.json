@@ -11,6 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "content:inventory": "node scripts/content-migration.mjs",
+    "content:import": "node scripts/content-migration.mjs --apply",
+    "content:export": "node scripts/export-content.mjs",
     "format": "prettier --check .",
     "format:write": "prettier --write ."
   },
@@ -42,6 +45,7 @@
     "jsdom": "latest",
     "postcss": "latest",
     "prettier": "latest",
+    "supabase": "^2.121.0",
     "tailwindcss": "latest",
     "typescript": "latest",
     "vitest": "latest"

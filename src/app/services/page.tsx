@@ -4,7 +4,10 @@ import { ServiceCategorySlideshow } from "@/components/sections/service-category
 import { ServiceDirectory } from "@/components/sections/service-directory";
 import { CTA } from "@/components/sections/cta";
 import { Button } from "@/components/ui/button";
-import { getEntries } from "@/lib/content/loader";
+import {
+  getEntriesAsync,
+  getPublishedServiceCategories
+} from "@/lib/content/repository";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
@@ -14,14 +17,15 @@ export const metadata = createMetadata({
   path: "/services"
 });
 
-export default function ServicesPage() {
-  const railItems: ContentRailItem[] = getEntries("services").map((entry) => ({
+export default async function ServicesPage() {
+  const railItems: ContentRailItem[] = (await getEntriesAsync("services")).map((entry) => ({
     eyebrow: entry.category || "Service",
     title: entry.title,
     body: entry.summary,
     href: entry.href,
     meta: "View service"
   }));
+  const categories = await getPublishedServiceCategories();
 
   return (
     <>
@@ -33,11 +37,15 @@ export default function ServicesPage() {
               Software engineering for products, workflows, and existing systems.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
-              We build customer-facing products and internal applications, connect useful AI capabilities to existing workflows, and improve software that needs to become easier to maintain and extend.
+              We build customer-facing products and internal applications, connect useful AI
+              capabilities to existing workflows, and improve software that needs to become easier
+              to maintain and extend.
             </p>
-            <Button href="/start-project" className="mt-7">Discuss a project</Button>
+            <Button href="/start-project" className="mt-7">
+              Discuss a project
+            </Button>
           </div>
-          <ServiceCategorySlideshow />
+          <ServiceCategorySlideshow categories={categories} />
         </Container>
       </section>
       <Section>
@@ -52,10 +60,14 @@ export default function ServicesPage() {
       <Section className="bg-surface">
         <Container>
           <div className="mb-10 max-w-3xl">
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">Service catalogue</p>
-            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">Explore the work behind the categories.</h2>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
+              Service catalogue
+            </p>
+            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+              Explore the work behind the categories.
+            </h2>
           </div>
-          <ServiceDirectory />
+          <ServiceDirectory categories={categories} />
         </Container>
       </Section>
       <CTA />

@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 import { DetailPage } from "@/components/sections/detail-page";
-import { getEntries, getEntry } from "@/lib/content/loader";
+import { getEntriesAsync, getEntryAsync, getRelatedInsights } from "@/lib/content/repository";
 import { createMetadata } from "@/lib/seo/metadata";
 
-export function generateStaticParams() {
-  return getEntries("insights").map((entry) => ({ slug: entry.slug }));
+export async function generateStaticParams() {
+  return (await getEntriesAsync("insights")).map((entry) => ({ slug: entry.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const entry = getEntry("insights", slug);
+  const entry = await getEntryAsync("insights", slug);
   return entry
     ? {
         ...createMetadata({
@@ -31,12 +31,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function InsightDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const entry = getEntry("insights", slug);
+  const entry = await getEntryAsync("insights", slug);
   if (!entry) notFound();
   return (
     <DetailPage
       entry={entry}
-      relatedEntries={getEntries("insights")}
+      relatedEntries={await getRelatedInsights(slug)}
       backHref="/insights"
       backLabel="Insights"
     />

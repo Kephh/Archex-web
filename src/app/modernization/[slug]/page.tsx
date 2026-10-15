@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 import { DetailPage } from "@/components/sections/detail-page";
-import { getEntries, getEntry } from "@/lib/content/loader";
+import { getEntriesAsync, getEntryAsync } from "@/lib/content/repository";
 import { createMetadata } from "@/lib/seo/metadata";
 
-export function generateStaticParams() {
-  return getEntries("modernization").map((entry) => ({ slug: entry.slug }));
+export async function generateStaticParams() {
+  return (await getEntriesAsync("modernization")).map((entry) => ({ slug: entry.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const entry = getEntry("modernization", slug);
+  const entry = await getEntryAsync("modernization", slug);
   return entry
     ? createMetadata({
         title: entry.title,
@@ -25,7 +25,7 @@ export default async function ModernizationDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const entry = getEntry("modernization", slug);
+  const entry = await getEntryAsync("modernization", slug);
   if (!entry) notFound();
   return <DetailPage entry={entry} backHref="/modernization" backLabel="Modernization" />;
 }

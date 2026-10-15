@@ -15,12 +15,14 @@ export type ContentRailItem = {
 export function ContentRail({
   eyebrow,
   title,
+  description,
   viewAllHref,
   viewAllLabel = "View all",
   items
 }: {
   eyebrow: string;
   title: string;
+  description?: string;
   viewAllHref?: string;
   viewAllLabel?: string;
   items: ContentRailItem[];
@@ -54,10 +56,16 @@ export function ContentRail({
         <div className="max-w-2xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">{eyebrow}</p>
           <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">{title}</h2>
+          {description ? (
+            <p className="mt-4 max-w-xl text-base leading-7 text-muted">{description}</p>
+          ) : null}
         </div>
         <div className="flex items-center gap-3">
           {viewAllHref ? (
-            <Link href={viewAllHref} className="mr-2 inline-flex items-center gap-2 text-sm font-semibold text-forest">
+            <Link
+              href={viewAllHref}
+              className="mr-2 inline-flex items-center gap-2 text-sm font-semibold text-forest"
+            >
               {viewAllLabel} <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           ) : null}
@@ -97,19 +105,37 @@ export function ContentRail({
             <div className="relative mb-8 flex min-h-28 items-end overflow-hidden bg-surface-muted p-4">
               <div className="absolute inset-4 border border-olive/50" />
               <div className="absolute right-5 top-5 h-12 w-12 rounded-full border border-olive/60 transition-transform duration-300 group-hover:translate-x-2" />
-              <p className="relative font-mono text-[11px] uppercase tracking-[0.18em] text-olive">{item.eyebrow}</p>
+              <p className="relative font-mono text-[11px] uppercase tracking-[0.18em] text-olive">
+                {item.eyebrow}
+              </p>
             </div>
-            <h3 className="text-2xl font-semibold leading-tight tracking-[-0.02em]">{item.title}</h3>
+            <h3 className="text-2xl font-semibold leading-tight tracking-[-0.02em]">
+              {item.title}
+            </h3>
             <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted">{item.body}</p>
             <div className="mt-auto flex items-center justify-between gap-4 pt-6 text-sm font-semibold text-forest">
               <span>{item.meta || "Explore"}</span>
-              <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true" />
+              <ArrowUpRight
+                size={18}
+                className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+                aria-hidden="true"
+              />
             </div>
           </Link>
         ))}
       </div>
       <div className="mt-2 h-px bg-border">
-        <div className="h-px w-1/3 bg-olive transition-transform duration-300" style={{ transform: position === "end" ? "translateX(200%)" : position === "middle" ? "translateX(100%)" : "translateX(0)" }} />
+        <div
+          className="h-px w-1/3 bg-olive transition-transform duration-300"
+          style={{
+            transform:
+              position === "end"
+                ? "translateX(200%)"
+                : position === "middle"
+                  ? "translateX(100%)"
+                  : "translateX(0)"
+          }}
+        />
       </div>
     </section>
   );

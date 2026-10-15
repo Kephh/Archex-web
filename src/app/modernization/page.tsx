@@ -3,7 +3,7 @@ import { EntryGrid } from "@/components/sections/entry-grid";
 import { PageHero } from "@/components/sections/page-hero";
 import { ProcessSteps } from "@/components/sections/process";
 import { CTA } from "@/components/sections/cta";
-import { getEntries } from "@/lib/content/loader";
+import { getEntriesAsync } from "@/lib/content/repository";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
@@ -13,7 +13,7 @@ export const metadata = createMetadata({
   path: "/modernization"
 });
 
-export default function ModernizationPage() {
+export default async function ModernizationPage() {
   return (
     <>
       <PageHero
@@ -47,7 +47,7 @@ export default function ModernizationPage() {
       </Section>
       <Section className="bg-surface">
         <Container>
-          <EntryGrid entries={getEntries("modernization")} />
+          <EntryGrid entries={await getEntriesAsync("modernization")} />
         </Container>
       </Section>
       <CTA />

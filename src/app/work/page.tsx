@@ -2,7 +2,7 @@ import { Container, Section } from "@/components/layout/container";
 import { EntryGrid } from "@/components/sections/entry-grid";
 import { PageHero } from "@/components/sections/page-hero";
 import { CTA } from "@/components/sections/cta";
-import { getEntries } from "@/lib/content/loader";
+import { getEntriesAsync } from "@/lib/content/repository";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
@@ -12,7 +12,7 @@ export const metadata = createMetadata({
   path: "/work"
 });
 
-export default function WorkPage() {
+export default async function WorkPage() {
   return (
     <>
       <PageHero
@@ -22,7 +22,7 @@ export default function WorkPage() {
       />
       <Section>
         <Container>
-          <EntryGrid entries={getEntries("work")} />
+          <EntryGrid entries={await getEntriesAsync("work")} />
         </Container>
       </Section>
       <CTA />

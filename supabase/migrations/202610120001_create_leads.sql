@@ -30,6 +30,7 @@ alter table public.leads enable row level security;
 drop policy if exists "No public read access to leads" on public.leads;
 drop policy if exists "No public insert access to leads" on public.leads;
 
+drop policy if exists "Service role can manage leads" on public.leads;
 create policy "Service role can manage leads"
 on public.leads
 for all

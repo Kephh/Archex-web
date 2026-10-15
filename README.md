@@ -27,7 +27,9 @@ npm run test:e2e
 Fill these in `.env.local` for local integration testing and in your hosting provider for production.
 
 - `NEXT_PUBLIC_SITE_URL`: production URL, such as `https://example.com`.
+- `CONTENT_SOURCE`: `source` for checked-in content during local development, or `database` after the content migration has been applied and verified in a non-production Supabase project.
 - `SUPABASE_URL`: Supabase project URL from Project Settings.
+- `SUPABASE_PUBLISHABLE_KEY`: publishable/anonymous key used by the server-side public content reader. It is not a secret, but it must not be used for writes.
 - `SUPABASE_SECRET_KEY`: Supabase server-only secret or service role key. Required with `SUPABASE_URL` for production persistence. Never expose this in browser code.
 - `RESEND_API_KEY`, `LEAD_NOTIFY_TO`, `LEAD_NOTIFY_FROM`: configure all three to send notification email from a verified domain. The lead is still saved if notification email is unavailable.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`: optional Cloudflare Turnstile site key.
@@ -65,6 +67,40 @@ Cloudflare Turnstile is optional. Add both the public site key and secret key to
 Content lives in `content/services`, `content/modernization`, `content/industries`, `content/work`, and `content/insights`. Each `.mdx` file needs frontmatter with `title`, `slug`, `summary`, and `status`. Draft entries are ignored by public route generation.
 
 Case studies are currently illustrative and clearly labeled. Replace them with approved real work, real constraints, and verified outcomes only.
+
+## Database content migration
+
+The additive content schema is in `supabase/migrations/202610150001_create_content.sql`.
+The importer is dry-run by default and reads the existing MDX files and service catalogue:
+
+```powershell
+npm run content:inventory
+```
+
+Review the printed records and SQL before applying to a development or staging project. Applying requires
+`--apply` through the package script and uses the server-only Supabase secret:
+
+```powershell
+npm run content:import
+```
+
+The importer refuses environments marked with `NODE_ENV=production` or `SUPABASE_ENV=production` unless
+`--allow-production` is explicitly provided. Do not add that flag until source parity and end-to-end
+checks have passed.
+
+Export database-backed content before a rollout or rollback rehearsal:
+
+```powershell
+npm run content:export
+```
+
+This exports content tables only, not the transactional `leads` table. For a schema backup, use the
+Supabase CLI against the authorized project, for example `supabase db dump --schema public`, and store
+the output securely outside the repository.
+
+Set `CONTENT_SOURCE=database` only after the migration has been applied and verified in staging. Until
+then, `CONTENT_SOURCE=source` keeps the checked-in MDX source as the runtime source and avoids a
+database requirement for unrelated local tests/builds.
 
 ## Deployment
 

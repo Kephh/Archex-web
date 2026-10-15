@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { cache } from "react";
-import { contentKindSchema, contentMetaSchema, type ContentEntry, type ContentKind } from "./schema";
+import {
+  contentKindSchema,
+  contentMetaSchema,
+  type ContentEntry,
+  type ContentKind
+} from "./schema";
 
 const root = path.join(process.cwd(), "content");
 
@@ -37,26 +42,31 @@ export function parseFrontmatter(raw: string) {
 }
 
 export function renderMarkdown(body: string) {
-  return body
-    .split(/\n{2,}/)
-    .map((block) => {
-      const text = block.trim();
-      if (text.startsWith("## ")) return { type: "h2", text: text.slice(3) };
-      if (text.startsWith("### ")) return { type: "h3", text: text.slice(4) };
-      if (text.startsWith("- ")) {
-        return {
-          type: "ul",
-          items: text.split(/\r?\n/).map((item) => item.replace(/^- /, ""))
-        };
-      }
+  return body.split(/\n{2,}/).map((block) => {
+    const text = block.trim();
+    if (text.startsWith("## ")) return { type: "h2", text: text.slice(3) };
+    if (text.startsWith("### ")) return { type: "h3", text: text.slice(4) };
+    if (text.startsWith("- ")) {
+      return {
+        type: "ul",
+        items: text.split(/\r?\n/).map((item) => item.replace(/^- /, ""))
+      };
+    }
 
-      return { type: "p", text };
-    });
+    return { type: "p", text };
+  });
 }
 
 function getReadingTime(body: string) {
   const words = body.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.ceil(words / 200));
+}
+
+export function isPubliclyPublished(status: string, date?: string) {
+  return (
+    status === "published" &&
+    (!date || (!Number.isNaN(Date.parse(date)) && Date.parse(date) <= Date.now()))
+  );
 }
 
 export const getEntries = cache((kind: ContentKind): ContentEntry[] => {
@@ -79,7 +89,7 @@ export const getEntries = cache((kind: ContentKind): ContentEntry[] => {
         href: kind === "insights" ? `/insights/${meta.slug}` : `/${kind}/${meta.slug}`
       };
     })
-    .filter((entry) => entry.status === "published")
+    .filter((entry) => isPubliclyPublished(entry.status, entry.date))
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 });
 

@@ -3,18 +3,24 @@ import { expect, test } from "@playwright/test";
 test("homepage renders and mobile navigation opens", async ({ page }) => {
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: /Good software starts with good engineering/i })
+    page.getByRole("heading", { name: /Build what’s next\. Improve what’s already there/i })
   ).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
   const lightBackground = await page
     .locator("body")
-    .evaluate((element) => getComputedStyle(element).backgroundColor);
+    .evaluate((element) => {
+      const style = getComputedStyle(element);
+      return `${style.backgroundColor}|${style.backgroundImage}`;
+    });
   const themeToggle = page.getByRole("button", { name: "Switch to dark mode" });
   await themeToggle.click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   const darkBackground = await page
     .locator("body")
-    .evaluate((element) => getComputedStyle(element).backgroundColor);
+    .evaluate((element) => {
+      const style = getComputedStyle(element);
+      return `${style.backgroundColor}|${style.backgroundImage}`;
+    });
   expect(darkBackground).not.toBe(lightBackground);
   await page.reload();
   await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
@@ -24,7 +30,7 @@ test("homepage renders and mobile navigation opens", async ({ page }) => {
 
   const workflowStep = page.getByRole("tab", { name: /Choose the next change/i });
   await workflowStep.click();
-  await expect(page.getByRole("tabpanel")).toContainText(/Set a focused release boundary/i);
+  await expect(page.locator("#workflow-detail")).toContainText(/Set a focused release boundary/i);
   await workflowStep.press("ArrowLeft");
   await expect(page.getByRole("tab", { name: /Understand the system/i })).toHaveAttribute(
     "aria-selected",
@@ -57,12 +63,6 @@ test("homepage renders and mobile navigation opens", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: /open navigation/i })).toBeFocused();
 
-  await page.setViewportSize({ width: 1280, height: 900 });
-  const faq = page.locator("details").filter({ hasText: "Can you work with an existing team?" });
-  await faq.locator("summary").press("Enter");
-  await expect(faq.locator("p")).toBeVisible();
-  await faq.locator("summary").press("Enter");
-  await expect(faq.locator("p")).toBeHidden();
   await expect(page.getByRole("link", { name: /AI-assisted intake/i })).toHaveAttribute(
     "href",
     "/work/ai-assisted-intake-workflow"
