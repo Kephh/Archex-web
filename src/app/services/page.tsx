@@ -45,7 +45,6 @@ export default function ServicesPage() {
           <ContentRail
             eyebrow="Primary services"
             title="Choose the kind of help you need."
-            description="Start with a focused service, then shape the engagement around the problem, constraints, and next useful step."
             items={railItems}
           />
         </Container>
