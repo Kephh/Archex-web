@@ -181,7 +181,12 @@ async function databaseEntries(kind: ContentKind): Promise<ContentEntry[]> {
     });
   }
 
-  const table = kind === "modernization" ? "modernization_entries" : kind;
+  const table =
+    kind === "modernization"
+      ? "modernization_entries"
+      : kind === "work"
+        ? "work_items"
+        : kind;
   const { data, error } = await supabase
     .from(table)
     .select("*")
