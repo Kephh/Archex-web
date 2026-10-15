@@ -15,14 +15,12 @@ export type ContentRailItem = {
 export function ContentRail({
   eyebrow,
   title,
-  description,
   viewAllHref,
   viewAllLabel = "View all",
   items
 }: {
   eyebrow: string;
   title: string;
-  description: string;
   viewAllHref?: string;
   viewAllLabel?: string;
   items: ContentRailItem[];
@@ -56,7 +54,6 @@ export function ContentRail({
         <div className="max-w-2xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">{eyebrow}</p>
           <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">{title}</h2>
-          <p className="mt-4 max-w-xl leading-7 text-muted">{description}</p>
         </div>
         <div className="flex items-center gap-3">
           {viewAllHref ? (

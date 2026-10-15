@@ -315,10 +315,6 @@ export default function HomePage() {
           </div>
           <div className="reveal-on-load reveal-on-load-delay-2 relative mx-auto w-full max-w-2xl">
             <WorkflowDiagram />
-            <p className="mt-6 max-w-sm text-sm leading-6 text-muted">
-              A practical view of the work: understand the system, choose a direction, build with
-              constraints in mind, and improve based on what the real use reveals.
-            </p>
           </div>
         </Container>
       </section>
@@ -328,7 +324,6 @@ export default function HomePage() {
           <ContentRail
             eyebrow="What we do"
             title="Engineering for what comes next."
-            description="From new products to practical AI integration and stronger existing systems, we help businesses make the next useful move."
             viewAllHref="/services"
             viewAllLabel="View all services"
             items={serviceRailItems}
@@ -341,7 +336,6 @@ export default function HomePage() {
           <ContentRail
             eyebrow="Who we help"
             title="Different industries. Real engineering challenges."
-            description="Explore the business contexts and software challenges Archex can help address."
             viewAllHref="/industries"
             viewAllLabel="View all industries"
             items={industryRailItems}
@@ -689,7 +683,6 @@ export default function HomePage() {
           <ContentRail
             eyebrow="Selected work"
             title="The problem shapes the solution."
-            description="Explore engineering approaches, product decisions, and examples of the work that goes into building and improving software."
             viewAllHref="/work"
             viewAllLabel="View all work"
             items={workRailItems}
@@ -702,7 +695,6 @@ export default function HomePage() {
           <ContentRail
             eyebrow="Insights"
             title="Ideas worth building on."
-            description="Practical thinking on software engineering, AI integration, modernization, and the decisions behind better systems."
             viewAllHref="/insights"
             viewAllLabel="View all insights"
             items={insightRailItems}
