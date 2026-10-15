@@ -450,9 +450,14 @@ function contentRecords() {
     }),
     ...records.services
       .filter((record) => !catalogue.some((service) => service.slug === record.slug))
-      .map((record) => {
+      .map((record, index) => {
         const [category_slug, category_name] = mdxServiceCategory[record.slug] || [];
-        return { ...record, category_slug, category_name };
+        return {
+          ...record,
+          category_slug,
+          category_name,
+          display_order: record.display_order ?? (catalogue.length + index)
+        };
       })
   ];
   records.industries = [
@@ -593,7 +598,7 @@ async function applyRecords(records) {
     capabilities: record.capabilities || [],
     status: record.status === "draft" ? "draft" : "published",
     featured: Boolean(record.featured),
-    display_order: record.display_order
+    display_order: record.display_order ?? 0
   }));
   if (serviceRows.some((row) => !row.category_id)) {
     throw new Error("One or more service records have no matching technical category.");
@@ -609,9 +614,7 @@ async function applyRecords(records) {
     summary: record.summary,
     body: record.body || "",
     status: record.status === "draft" ? "draft" : "published",
-    featured: Boolean(record.featured),
-    published_at: record.date || null,
-    display_order: record.display_order || 0
+    published_at: record.date || null
   });
   await upsertMany(
     client,
@@ -629,6 +632,7 @@ async function applyRecords(records) {
     records.industries.map((record, index) => ({
       ...mapGeneric("industries", record),
       context: record.context || "",
+      featured: Boolean(record.featured),
       display_order: index
     }))
   );
@@ -648,6 +652,7 @@ async function applyRecords(records) {
       ...mapGeneric("insights", record),
       category: record.category || null,
       tags: record.tags || [],
+      featured: Boolean(record.featured),
       updated_at_content: record.updated || null
     }))
   );
