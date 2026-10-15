@@ -46,7 +46,7 @@ export function WorkflowDiagram() {
 
   return (
     <div
-      className="overflow-hidden rounded-md bg-forest text-on-forest shadow-[16px_16px_0_0_var(--strong-border)] md:min-h-[32rem]"
+      className="workflow-panel overflow-hidden rounded-md bg-forest text-on-forest shadow-[16px_16px_0_0_var(--strong-border)] md:min-h-[32rem]"
       aria-label="Illustrative engineering workflow"
     >
       <div className="flex items-center justify-between border-b border-on-forest/15 px-5 py-4">

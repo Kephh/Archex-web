@@ -292,7 +292,7 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border">
+      <section className="hero-section relative overflow-hidden border-b border-border">
         <Container className="grid min-h-[calc(100vh-4.5rem)] gap-10 py-8 sm:gap-12 sm:py-10 md:grid-cols-[1.05fr_0.95fr] md:items-start md:gap-12 lg:gap-16 lg:py-12">
           <div className="max-w-4xl">
             <p className="reveal-on-load font-mono text-xs uppercase tracking-[0.22em] text-olive">

@@ -45,16 +45,16 @@
 }
 
 :root[data-theme="dark"] {
-  --paper: #111c2e;
-  --ink: #f4f1ea;
-  --forest: #f4f1ea;
-  --forest-hover: #d1a477;
+  --paper: #0c1422;
+  --ink: #f5f0e7;
+  --forest: #f5f0e7;
+  --forest-hover: #e2bd91;
   --olive: #d1a477;
-  --border: #354457;
-  --strong-border: #667382;
-  --muted: #b6c1cf;
-  --surface: #192638;
-  --surface-muted: #26364a;
+  --border: #29364a;
+  --strong-border: #40516a;
+  --muted: #b2bece;
+  --surface: #111c2e;
+  --surface-muted: #172338;
   --on-forest: #111c2e;
   --button-primary: #f4f1ea;
   --button-primary-text: #111c2e;
@@ -91,6 +91,76 @@ body {
   transition:
     background-color 180ms ease,
     color 180ms ease;
+}
+
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 78% 8%, rgb(61 91 139 / 12%), transparent 30rem),
+    linear-gradient(180deg, #080f1b 0%, #0c1422 34rem, #0c1422 100%);
+}
+
+html[data-theme="dark"] .hero-section::after {
+  position: absolute;
+  top: 8%;
+  right: 18%;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgb(111 145 200 / 10%), transparent 68%);
+  content: "";
+  pointer-events: none;
+}
+
+html[data-theme="dark"] .hero-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-theme="dark"] section.bg-surface {
+  background-color: #111c2e;
+}
+
+html[data-theme="dark"] section.bg-surface-muted {
+  background-color: #172338;
+}
+
+html[data-theme="dark"] .workflow-panel [class*="text-on-forest"] {
+  color: #f5f0e7 !important;
+}
+
+html[data-theme="dark"] .workflow-panel [class*="border-on-forest"] {
+  border-color: rgb(245 240 231 / 16%) !important;
+}
+
+html[data-theme="dark"] .workflow-panel [class*="hover:bg-on-forest"]:hover {
+  background-color: rgb(245 240 231 / 9%) !important;
+}
+
+html[data-theme="dark"] .workflow-panel {
+  background: linear-gradient(145deg, #111c2e, #172338);
+  color: #f5f0e7;
+  box-shadow: 16px 16px 0 0 #29364a;
+}
+
+html[data-theme="dark"] .content-rail {
+  background: linear-gradient(180deg, rgb(23 35 56 / 42%), transparent 12rem);
+}
+
+html[data-theme="dark"] .content-rail [data-rail-card] {
+  background: #111c2e;
+  border-color: #29364a;
+}
+
+html[data-theme="dark"] .content-rail [data-rail-card]:hover,
+html[data-theme="dark"] .content-rail [data-rail-card]:focus-visible {
+  border-color: #d1a477;
+  background: #172338;
+}
+
+html[data-theme="dark"] .content-rail [data-rail-card] > div:first-child {
+  background:
+    linear-gradient(135deg, rgb(111 145 200 / 9%), transparent 60%),
+    #172338;
 }
 
 a {

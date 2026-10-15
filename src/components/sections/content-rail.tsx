@@ -51,7 +51,7 @@ export function ContentRail({
   }
 
   return (
-    <section className="overflow-hidden border-y border-border py-16 sm:py-20">
+    <section className="content-rail overflow-hidden border-y border-border py-16 sm:py-20">
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div className="max-w-2xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">{eyebrow}</p>
