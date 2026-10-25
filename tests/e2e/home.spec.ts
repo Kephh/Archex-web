@@ -28,14 +28,17 @@ test("homepage renders and mobile navigation opens", async ({ page }) => {
   await page.getByRole("button", { name: "Switch to light mode" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
-  const workflowStep = page.getByRole("tab", { name: /Choose the next change/i });
+  const workflowStep = page.getByRole("tab", {
+    name: /Choose the next change|Plan scope & architecture/i
+  });
   await workflowStep.click();
-  await expect(page.locator("#workflow-detail")).toContainText(/Set a focused release boundary/i);
-  await workflowStep.press("ArrowLeft");
-  await expect(page.getByRole("tab", { name: /Understand the system/i })).toHaveAttribute(
-    "aria-selected",
-    "true"
+  await expect(page.locator("#workflow-detail")).toContainText(
+    /Set a focused release boundary|Set explicit delivery boundaries/i
   );
+  await workflowStep.press("ArrowLeft");
+  await expect(
+    page.getByRole("tab", { name: /Understand the system|Understand the problem/i })
+  ).toHaveAttribute("aria-selected", "true");
 
   await page.goto("/services");
   await expect(

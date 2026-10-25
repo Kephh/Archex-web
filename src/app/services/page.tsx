@@ -23,7 +23,9 @@ export default async function ServicesPage() {
     title: entry.title,
     body: entry.summary,
     href: entry.href,
-    meta: "View service"
+    meta: "View service",
+    image: entry.image,
+    imageAlt: entry.imageAlt
   }));
   const categories = await getPublishedServiceCategories();
 

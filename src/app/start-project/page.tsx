@@ -1,6 +1,7 @@
 import { Container, Section } from "@/components/layout/container";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { PageHero } from "@/components/sections/page-hero";
+import { ScrollToFormArrow } from "@/components/ui/scroll-to-form-arrow";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({ title: "Start a Project", path: "/start-project" });
@@ -8,6 +9,7 @@ export const metadata = createMetadata({ title: "Start a Project", path: "/start
 export default function StartProjectPage() {
   return (
     <>
+      <ScrollToFormArrow />
       <PageHero
         eyebrow="Project enquiry"
         title="Tell us what you are trying to build, fix, or improve."

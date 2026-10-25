@@ -6,23 +6,30 @@ import { useState } from "react";
 const steps = [
   {
     number: "01",
-    title: "Understand the system",
+    title: "1. Understand the problem",
     shortTitle: "Understand",
-    detail: "Map the people, data, dependencies, and decisions around the software.",
+    detail: "Map the business goals, user needs, operating constraints, and system dependencies before deciding on code.",
     status: "complete"
   },
   {
     number: "02",
-    title: "Choose the next change",
-    shortTitle: "Choose",
-    detail: "Set a focused release boundary and make the important trade-offs explicit.",
+    title: "2. Plan scope & architecture",
+    shortTitle: "Plan",
+    detail: "Set explicit delivery boundaries, choose proportionate architecture, and agree on measurable evaluation criteria.",
     status: "active"
   },
   {
     number: "03",
-    title: "Review what ships",
-    shortTitle: "Review",
-    detail: "Use tests, working software, and feedback to decide what should happen next.",
+    title: "3. Build and validate",
+    shortTitle: "Build",
+    detail: "Engineer in testable slices, integrate with surrounding software, and verify behavior with continuous reviews.",
+    status: "next"
+  },
+  {
+    number: "04",
+    title: "4. Deliver and improve",
+    shortTitle: "Deliver",
+    detail: "Deploy responsibly, observe real-world performance, hand over clear documentation, and prioritize the next improvement.",
     status: "next"
   }
 ] as const;
@@ -66,7 +73,7 @@ export function WorkflowDiagram() {
           className="md:min-h-[13rem]"
         >
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-on-forest/60">
-            Selected step
+            Stage {steps[selected].number} / {steps[selected].shortTitle}
           </p>
           <p className="mt-3 max-w-sm font-serif text-3xl leading-tight sm:text-4xl">
             {steps[selected].detail}
@@ -106,7 +113,7 @@ export function WorkflowDiagram() {
             );
           })}
         </div>
-        <div className="grid grid-cols-3 gap-2 border-t border-on-forest/15 pt-5 font-mono text-[10px] uppercase tracking-[0.12em] text-on-forest/55">
+        <div className="grid grid-cols-4 gap-2 border-t border-on-forest/15 pt-5 font-mono text-[10px] uppercase tracking-[0.12em] text-on-forest/55">
           {steps.map((step) => (
             <span key={step.number}>{step.shortTitle}</span>
           ))}

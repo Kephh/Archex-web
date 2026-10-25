@@ -36,16 +36,19 @@ export default function AboutPage() {
               {[
                 [
                   "Understand",
-                  "Start with the business problem, users, system context, and constraints."
+                  "Clarify the business problem, target users, technical constraints, systems, and desired outcome."
                 ],
                 [
-                  "Choose",
-                  "Recommend the simplest approach that fits the problem and its constraints."
+                  "Plan",
+                  "Agree on priorities, scope boundaries, technical architecture, and evaluation criteria."
                 ],
-                ["Deliver", "Build in reviewed, testable increments with clear communication."],
                 [
-                  "Improve",
-                  "Use what the team learns to strengthen the product and the system around it."
+                  "Build and validate",
+                  "Engineer, integrate, test, review, and refine in working software increments."
+                ],
+                [
+                  "Deliver and improve",
+                  "Release responsibly, observe how the solution performs, and determine the next improvement."
                 ]
               ].map(([title, body], index) => (
                 <li

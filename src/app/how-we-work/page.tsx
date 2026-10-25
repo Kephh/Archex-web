@@ -19,20 +19,20 @@ export default function HowWeWorkPage() {
           <ProcessSteps
             steps={[
               {
-                title: "Discovery",
-                body: "Understand the users, business rules, systems, risks, and constraints."
+                title: "Understand",
+                body: "Clarify the business problem, target users, operating constraints, existing systems, and the desired outcome."
               },
               {
-                title: "Architecture",
-                body: "Make technical choices explicit and proportionate to the problem."
+                title: "Plan",
+                body: "Agree on priorities, scope boundaries, technical architecture, and explicit criteria for how success will be evaluated."
               },
               {
-                title: "Implementation",
-                body: "Build in slices with review, tests, demonstrations, and documentation."
+                title: "Build and validate",
+                body: "Engineer, integrate, test, review, and refine in working software increments with continuous feedback."
               },
               {
-                title: "Maintenance",
-                body: "Monitor changes, fix issues, and keep the system understandable."
+                title: "Deliver and improve",
+                body: "Release or hand over responsibly, observe how the solution performs in real use, and determine the next improvement."
               }
             ]}
           />

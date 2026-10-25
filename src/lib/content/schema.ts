@@ -6,6 +6,8 @@ export const contentMetaSchema = z.object({
   title: z.string().min(3),
   slug: z.string().regex(/^[a-z0-9-]+$/),
   summary: z.string().min(20),
+  image: z.string().optional(),
+  imageAlt: z.string().optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   date: z.string().optional(),

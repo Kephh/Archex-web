@@ -4,7 +4,6 @@ import { navItems, siteConfig } from "@/config/site";
 
 const serviceLinks = [
   { label: "AI solutions", href: "/ai-solutions" },
-  { label: "Modernization", href: "/modernization" },
   { label: "Engagement models", href: "/engagement-models" },
   { label: "How we work", href: "/how-we-work" }
 ];

@@ -299,3 +299,24 @@ textarea:focus-visible {
 .prose-content li {
   margin: 0.45rem 0;
 }
+
+@keyframes pulse-beat {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--forest) 25%, transparent);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--forest) 0%, transparent);
+  }
+}
+
+.animate-pulse-beat {
+  animation: pulse-beat 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-beat {
+    animation: none;
+  }
+}

@@ -128,52 +128,64 @@ const capabilityRows = [
 const aiStages = [
   {
     id: "workflow",
-    title: "Identify a useful workflow",
-    body: "We look for work that is repetitive, rules-heavy, or difficult to scale without a lot of manual effort. The goal is to solve a real operational problem, not force AI into a workflow that does not need it."
+    title: "1. Identify a useful workflow",
+    body: "We look for work that is repetitive, rules-heavy, or difficult to scale without manual effort. The goal is to solve a genuine operational bottleneck, not force AI into processes that work better with simpler deterministic software.",
+    inputs: "Operational backlogs, recurring intake queues, document processing workflows.",
+    humanRole: "Domain experts define accuracy boundaries, business rules, and edge cases."
   },
   {
     id: "data",
-    title: "Connect the necessary data and systems",
-    body: "AI depends on real inputs and clear boundaries. We map the data sources, permissions, integrations, and surrounding software needed to make the experience useful and reviewable."
+    title: "2. Connect necessary data & systems",
+    body: "AI depends on real inputs and explicit permissions. We map the underlying data sources, APIs, permission matrices, and surrounding software to ensure the system is secure, compliant, and inspectable.",
+    inputs: "Internal databases, knowledge bases, CRM records, tenant permission rules.",
+    humanRole: "Security and data owners enforce access controls, PII redaction, and compliance policies."
   },
   {
     id: "experience",
-    title: "Engineer the AI-enabled experience",
-    body: "The interaction model matters as much as the model itself. We design the prompts, flows, decision points, and handoffs so the tool helps people without creating confusion or hidden risk."
+    title: "3. Engineer the interaction model",
+    body: "How people interact with an AI capability matters as much as the model itself. We design structured prompts, fallback behaviors, and clear decision points so users understand when an output is an assisted draft versus a confirmed state.",
+    inputs: "User prompts, contextual parameters, structured JSON response schemas.",
+    humanRole: "End users review suggestions, confirm state changes, and easily escalate exceptions."
   },
   {
     id: "evaluate",
-    title: "Evaluate behavior and prepare for real use",
-    body: "We test failure modes, edge cases, data quality, and review steps so the system behaves as expected in practice and can be improved as usage reveals new needs."
+    title: "4. Evaluate behavior & monitor live use",
+    body: "We test failure modes, edge cases, data quality, and review steps against curated golden datasets. Telemetry tracks latency, token cost, prediction drift, and human override rates over time.",
+    inputs: "Evaluation datasets, regression benchmarks, token telemetry, user feedback loops.",
+    humanRole: "Engineers and product leads review drift alerts, audit logs, and performance metrics."
   }
 ] as const;
 
 const modernizationTracks = [
   {
     id: "dependency",
-    headline:
-      "Before: Changes are difficult to make because key dependencies are poorly understood.",
+    name: "Tangled dependencies & brittle changes",
+    situation:
+      "Core modules are tightly coupled without automated tests. A change to one feature creates unexpected regressions across unrelated parts of the application.",
     approach:
-      "Approach: Map the relevant dependencies, establish appropriate tests, and improve the affected components incrementally.",
-    direction: "Potential direction: A clearer codebase and a safer path for continued development."
+      "Map component dependencies, introduce characterization test coverage around critical flows, and decouple monolithic logic using the Strangler Fig pattern behind clean interfaces.",
+    outcome:
+      "A modular, understandable architecture where engineers can safely extend features and upgrade frameworks without unexpected downtime."
   },
   {
     id: "release",
-    headline:
-      "Before: Release work is slower than it should be because testing and deployment are fragile.",
+    name: "Slow, fragile manual releases",
+    situation:
+      "Deployments require multi-hour manual verification, extensive off-hours maintenance windows, and frequent rollbacks due to missing test suites and ad-hoc scripts.",
     approach:
-      "Approach: Tighten the release path, reduce hidden risk, and improve the quality checks around the parts of the system that change most often.",
-    direction:
-      "Potential direction: Better confidence in shipping and more predictable operational flow."
+      "Automate regression test suites in CI pipelines, establish reproducible containerized staging environments, and configure zero-downtime rolling deployment strategies.",
+    outcome:
+      "Predictable, low-stress production releases that allow product teams to deliver improvements multiple times a week with confidence."
   },
   {
     id: "integration",
-    headline:
-      "Before: Fragile integrations and unclear data boundaries make a change feel costly before it starts.",
+    name: "Fragmented integrations & data synchronization lag",
+    situation:
+      "Internal tools, third-party APIs, and databases are glued together with fragile cron scripts, leading to stock discrepancies, lost records, and silent failures.",
     approach:
-      "Approach: Separate the core concerns, tighten the interfaces, and reduce the number of points where a small change triggers a large risk.",
-    direction:
-      "Potential direction: Less surprise, easier maintenance, and clearer ownership of system behavior."
+      "Isolate external integrations behind event-driven queues, enforce strict schema validation contracts (e.g. Zod), and implement centralized dead-letter monitoring with automated retries.",
+    outcome:
+      "Resilient, auditable data flows where downstream systems stay synchronized and integration failures alert immediately for fast remediation."
   }
 ] as const;
 
@@ -183,28 +195,36 @@ export default function HomePageClient({ content }: { content: HomepageContent }
     title: entry.title,
     body: entry.summary,
     href: entry.href,
-    meta: "View service"
+    meta: "View service",
+    image: entry.image,
+    imageAlt: entry.imageAlt
   }));
   const industryRailItems = content.industries.map((entry) => ({
     eyebrow: "Industry pattern",
     title: entry.title,
     body: entry.summary,
     href: entry.href,
-    meta: "Explore industry pattern"
+    meta: "Explore industry pattern",
+    image: entry.image,
+    imageAlt: entry.imageAlt
   }));
   const workRailItems = content.work.map((entry) => ({
     eyebrow: entry.illustrative ? "Illustrative work" : "Client work",
     title: entry.title,
     body: entry.summary,
     href: entry.href,
-    meta: "View example"
+    meta: "View example",
+    image: entry.image,
+    imageAlt: entry.imageAlt
   }));
   const insightRailItems = content.insights.map((entry) => ({
     eyebrow: entry.category || "Insight",
     title: entry.title,
     body: entry.summary,
     href: entry.href,
-    meta: `${entry.readingTime} min read`
+    meta: `${entry.readingTime} min read`,
+    image: entry.image,
+    imageAlt: entry.imageAlt
   }));
 
   const [selectedNeed, setSelectedNeed] = useState<number>(1);
@@ -259,7 +279,7 @@ export default function HomePageClient({ content }: { content: HomepageContent }
         </Container>
       </Section>
 
-      <Section>
+      <Section className="pb-0 sm:pb-0">
         <Container>
           <ContentRail
             eyebrow={content.pageContent.industries.eyebrow}
@@ -268,11 +288,12 @@ export default function HomePageClient({ content }: { content: HomepageContent }
             viewAllHref="/industries"
             viewAllLabel="View all industries"
             items={industryRailItems}
+            className="pb-6 sm:pb-8"
           />
         </Container>
       </Section>
 
-      <Section>
+      <Section className="pt-4 sm:pt-6">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
             <div>
@@ -489,34 +510,49 @@ export default function HomePageClient({ content }: { content: HomepageContent }
             </div>
 
             <div
-              className="mt-6 min-h-[13rem] rounded-xl border border-border bg-surface-muted p-5"
+              className="mt-6 min-h-[14rem] rounded-xl border border-border bg-surface-muted p-5 sm:p-6"
               role="tabpanel"
             >
               <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
-                Selected stage
+                Stage {selectedAiStage + 1} of {aiStages.length} / AI workflow design
               </p>
               <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
                 {activeAiStage.title}
               </h3>
-              <p className="mt-4 text-base leading-7 text-muted">{activeAiStage.body}</p>
+              <p className="mt-3 text-base leading-7 text-muted">{activeAiStage.body}</p>
+
+              <div className="mt-6 grid gap-4 border-t border-border pt-5 sm:grid-cols-2 text-xs">
+                <div>
+                  <p className="font-mono uppercase tracking-[0.16em] text-olive font-semibold">
+                    Systems & inputs involved
+                  </p>
+                  <p className="mt-1.5 leading-5 text-muted">{activeAiStage.inputs}</p>
+                </div>
+                <div>
+                  <p className="font-mono uppercase tracking-[0.16em] text-olive font-semibold">
+                    Human review & guardrails
+                  </p>
+                  <p className="mt-1.5 leading-5 text-muted">{activeAiStage.humanRole}</p>
+                </div>
+              </div>
             </div>
           </div>
         </Container>
       </Section>
 
       <Section className="bg-surface">
-        <Container>
-          <div className="max-w-3xl">
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
-              Modernization
-            </p>
-            <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
-              Your existing software may need improvement, not replacement.
-            </h2>
-          </div>
+        <Container className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start xl:gap-12">
+          <div className="space-y-8">
+            <div className="max-w-xl">
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">
+                Modernization
+              </p>
+              <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+                Your existing software may need improvement, not replacement.
+              </h2>
+            </div>
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="space-y-3">
+            <div className="space-y-4" role="tablist" aria-label="Modernization tracks">
               {modernizationTracks.map((track, index) => (
                 <button
                   key={track.id}
@@ -525,44 +561,52 @@ export default function HomePageClient({ content }: { content: HomepageContent }
                   className={[
                     "w-full rounded-2xl border p-4 text-left transition-colors",
                     selectedModernization === index
-                      ? "border-forest bg-surface text-ink"
+                      ? "border-forest bg-surface text-ink shadow-sm"
                       : "border-border bg-transparent text-muted hover:border-forest/50 hover:text-ink"
                   ].join(" ")}
                   aria-pressed={selectedModernization === index}
                 >
                   <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
-                    Scenario {index + 1}
+                    Modernization track 0{index + 1}
                   </p>
-                  <p className="mt-2 text-base font-medium leading-7">{track.headline}</p>
+                  <p className="mt-2 text-base font-semibold leading-snug">{track.name}</p>
                 </button>
               ))}
             </div>
+          </div>
 
-            <div className="rounded-2xl border border-border bg-surface p-6 lg:min-h-[27rem]">
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-olive">
-                Current situation
-              </p>
-              <p className="mt-4 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
-                {activeModernization.headline}
-              </p>
+          <div className="rounded-2xl border border-border bg-surface p-6 lg:min-h-[27rem] lg:p-8">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-olive">
+              Modernization path / Scenario 0{selectedModernization + 1}
+            </p>
+            <h3 className="mt-4 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              {activeModernization.name}
+            </h3>
 
-              <div className="mt-6 space-y-5">
-                <div className="rounded-xl border border-border bg-surface-muted p-4">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
-                    Approach
-                  </p>
-                  <p className="mt-3 text-base leading-7 text-muted">
-                    {activeModernization.approach}
-                  </p>
-                </div>
-                <div className="rounded-xl border border-border p-4">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
-                    Potential direction
-                  </p>
-                  <p className="mt-3 text-base leading-7 text-muted">
-                    {activeModernization.direction}
-                  </p>
-                </div>
+            <div className="mt-6 space-y-4">
+              <div className="rounded-xl border border-border bg-surface-muted p-4">
+                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive font-semibold">
+                  Current bottleneck
+                </p>
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  {activeModernization.situation}
+                </p>
+              </div>
+              <div className="rounded-xl border border-border p-4">
+                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive font-semibold">
+                  Engineering approach
+                </p>
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  {activeModernization.approach}
+                </p>
+              </div>
+              <div className="rounded-xl border border-forest/30 bg-forest/5 p-4">
+                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-forest font-semibold">
+                  Target outcome
+                </p>
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  {activeModernization.outcome}
+                </p>
               </div>
             </div>
           </div>
@@ -606,7 +650,7 @@ export default function HomePageClient({ content }: { content: HomepageContent }
 
             <div className="rounded-2xl border border-border bg-surface-muted p-6 lg:min-h-[14rem]">
               <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-olive">
-                Selected stage
+                Stage {selectedStage + 1} of {content.processStages.length} / Delivery process
               </p>
               <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
                 {activeWorkStage.title}

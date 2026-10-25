@@ -31,23 +31,23 @@ export type HomepageContent = {
 const sourceProcessStages = [
   {
     slug: "understand",
-    title: "Understand the problem",
-    body: "We clarify the business goal, technical constraints, users, and what success actually needs to look like."
+    title: "1. Understand the problem",
+    body: "We clarify the business goal, target users, technical constraints, existing systems, and what success looks like."
   },
   {
-    slug: "scope",
-    title: "Agree on scope and priorities",
-    body: "We define the initial boundary, the biggest risks, and the work that creates the most value in the first phase."
+    slug: "plan",
+    title: "2. Plan scope and architecture",
+    body: "We agree on initial boundaries, technical architecture, delivery priorities, and explicit evaluation criteria."
   },
   {
-    slug: "design",
-    title: "Design and engineer the solution",
-    body: "The work is shaped around real product and operational needs, supported by clear technical decisions and review points."
+    slug: "build",
+    title: "3. Build and validate",
+    body: "We engineer in testable increments with clear technical decisions, automated checks, and continuous review."
   },
   {
     slug: "deliver",
-    title: "Test, deliver, and improve",
-    body: "We release in reasonable increments, gather evidence, and keep improving the system with knowledge that is already in hand."
+    title: "4. Deliver and improve",
+    body: "We release responsibly, monitor operational performance in real use, and determine the next improvement."
   }
 ];
 
@@ -125,12 +125,22 @@ function mapEntry(
     updated_at_content?: string | null;
     featured?: boolean;
     work_type?: "illustrative" | "client_case_study";
+    image_url?: string | null;
+    image_alt?: string | null;
+    card_image_url?: string | null;
+    card_image_alt?: string | null;
+    cover_image_url?: string | null;
+    cover_image_alt?: string | null;
   }
 ): ContentEntry {
+  const imageUrl = row.card_image_url || row.cover_image_url || row.image_url || undefined;
+  const imageAlt = row.card_image_alt || row.cover_image_alt || row.image_alt || undefined;
   const metadata = contentMetaSchema.parse({
     title: row.title,
     slug: row.slug,
     summary: row.summary,
+    image: imageUrl,
+    imageAlt: imageAlt,
     category: row.category || undefined,
     tags: stringArray(row.tags),
     seoTitle: row.seo_title || undefined,
@@ -164,7 +174,7 @@ async function databaseEntries(kind: ContentKind): Promise<ContentEntry[]> {
     const { data, error } = await supabase
       .from("services")
       .select(
-        "slug,title,summary,introduction,approach,problems,capabilities,seo_title,seo_description,display_order,featured,published_at,category_id"
+        "slug,title,summary,introduction,approach,problems,capabilities,seo_title,seo_description,display_order,featured,published_at,category_id,card_image_url,card_image_alt"
       )
       .eq("status", "published")
       .or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`)

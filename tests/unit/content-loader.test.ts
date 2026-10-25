@@ -33,4 +33,18 @@ describe("content loader", () => {
     expect(isPubliclyPublished("published", "2999-01-01")).toBe(false);
     expect(isPubliclyPublished("published", "2020-01-01")).toBe(true);
   });
+
+  it("parses optional image and imageAlt in frontmatter", () => {
+    const raw = `---
+title: Platform Architecture Patterns
+slug: platform-architecture-patterns
+summary: Detailed architecture patterns for scalable enterprise platforms and reliable microservices.
+image: /images/insights/platform-architecture.webp
+imageAlt: Architectural diagram illustrating decoupled components
+---
+Body content here`;
+    const result = parseFrontmatter(raw);
+    expect(result.meta.image).toBe("/images/insights/platform-architecture.webp");
+    expect(result.meta.imageAlt).toBe("Architectural diagram illustrating decoupled components");
+  });
 });

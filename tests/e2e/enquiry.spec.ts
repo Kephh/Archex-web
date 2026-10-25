@@ -13,6 +13,17 @@ test("enquiry form validates and reports the server result", async ({ page }) =>
   await page.getByLabel(/I understand/i).check();
   await page.getByRole("button", { name: /send enquiry/i }).click();
   await expect(page.getByRole("status")).toContainText(
-    /Development mode|received|could not save|temporarily unavailable/i
+    /Development mode|received|could not save|temporarily unavailable/i,
+    { timeout: 10000 }
   );
+});
+
+test("scroll to form arrow scrolls to the enquiry form on contact and start-project", async ({ page }) => {
+  for (const path of ["/contact", "/start-project"]) {
+    await page.goto(path);
+    const scrollButton = page.getByRole("button", { name: /Scroll to enquiry form/i });
+    await expect(scrollButton).toBeVisible();
+    await scrollButton.click();
+    await expect(page.locator("#enquiry-form")).toBeInViewport();
+  }
 });

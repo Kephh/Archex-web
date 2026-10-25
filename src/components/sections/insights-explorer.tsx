@@ -18,7 +18,18 @@ function matches(entry: ContentEntry, query: string, category: string) {
   return (!query || searchable.includes(query.toLowerCase())) && (!category || entry.category === category);
 }
 
-function EditorialVisual({ compact = false }: { compact?: boolean }) {
+function EditorialVisual({
+  compact = false,
+  image,
+  imageAlt
+}: {
+  compact?: boolean;
+  image?: string;
+  imageAlt?: string;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(image && !imageFailed);
+
   return (
     <div
       className={[
@@ -27,15 +38,28 @@ function EditorialVisual({ compact = false }: { compact?: boolean }) {
       ].join(" ")}
       aria-hidden="true"
     >
-      <div className="absolute inset-5 border border-on-forest/20" />
-      <div className="absolute left-1/2 top-0 h-full w-px bg-on-forest/15" />
-      <div className="absolute left-0 top-1/2 h-px w-full bg-on-forest/15" />
-      <div className="absolute bottom-8 left-8 right-8 border-t border-olive/70" />
-      <div className="absolute bottom-8 left-8 h-20 w-20 border border-olive/70" />
-      <div className="absolute right-8 top-8 h-24 w-24 rounded-full border border-olive/70" />
-      <div className="absolute bottom-12 right-12 font-mono text-[10px] uppercase tracking-[0.2em] text-olive">
-        Archex / field notes
-      </div>
+      {showImage ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={image}
+          alt={imageAlt || ""}
+          loading="lazy"
+          onError={() => setImageFailed(true)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : (
+        <>
+          <div className="absolute inset-5 border border-on-forest/20" />
+          <div className="absolute left-1/2 top-0 h-full w-px bg-on-forest/15" />
+          <div className="absolute left-0 top-1/2 h-px w-full bg-on-forest/15" />
+          <div className="absolute bottom-8 left-8 right-8 border-t border-olive/70" />
+          <div className="absolute bottom-8 left-8 h-20 w-20 border border-olive/70" />
+          <div className="absolute right-8 top-8 h-24 w-24 rounded-full border border-olive/70" />
+          <div className="absolute bottom-12 right-12 font-mono text-[10px] uppercase tracking-[0.2em] text-olive">
+            Archex / field notes
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -81,7 +105,7 @@ export function InsightsExplorer({ entries }: { entries: ContentEntry[] }) {
       {featured ? (
         <article className="grid overflow-hidden border border-border bg-surface lg:grid-cols-[1.1fr_0.9fr]">
           <Link href={featured.href} className="group block">
-            <EditorialVisual />
+            <EditorialVisual image={featured.image} imageAlt={featured.imageAlt} />
           </Link>
           <div className="flex flex-col justify-center p-6 sm:p-10">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-olive">Featured note</p>
@@ -194,7 +218,7 @@ export function InsightsExplorer({ entries }: { entries: ContentEntry[] }) {
           {gridEntries.map((entry) => (
             <article key={entry.href} className="group overflow-hidden border border-border bg-surface transition-colors hover:border-forest">
               <Link href={entry.href} className="block">
-                <EditorialVisual compact />
+                <EditorialVisual compact image={entry.image} imageAlt={entry.imageAlt} />
                 <div className="p-6">
                   {entry.category ? (
                     <p className="font-mono text-xs uppercase tracking-[0.16em] text-olive">{entry.category}</p>

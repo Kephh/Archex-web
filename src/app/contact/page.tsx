@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Container, Section } from "@/components/layout/container";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { PageHero } from "@/components/sections/page-hero";
+import { ScrollToFormArrow } from "@/components/ui/scroll-to-form-arrow";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({ title: "Contact", path: "/contact" });
@@ -9,6 +10,7 @@ export const metadata = createMetadata({ title: "Contact", path: "/contact" });
 export default function ContactPage() {
   return (
     <>
+      <ScrollToFormArrow />
       <PageHero
         eyebrow="Contact"
         title="Send a general enquiry."

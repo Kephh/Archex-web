@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { ContentRenderer } from "@/components/sections/content-renderer";
+import { DetailHeroVisual } from "@/components/sections/detail-hero-visual";
 import type { ContentEntry } from "@/lib/content/schema";
 
 export function DetailPage({
@@ -49,16 +50,8 @@ export function DetailPage({
         </Container>
       </section>
       <Container className="py-14 sm:py-20">
-        {entry.kind === "insights" ? (
-          <div className="mb-12 overflow-hidden border border-border bg-forest text-on-forest" aria-label="Editorial illustration">
-            <div className="relative min-h-48 overflow-hidden p-5 sm:min-h-64">
-              <div className="absolute inset-5 border border-on-forest/20" />
-              <div className="absolute left-1/2 top-0 h-full w-px bg-on-forest/15" />
-              <div className="absolute left-0 top-1/2 h-px w-full bg-on-forest/15" />
-              <div className="absolute bottom-8 left-8 h-20 w-20 border border-olive/70" />
-              <div className="absolute right-8 top-8 h-24 w-24 rounded-full border border-olive/70" />
-            </div>
-          </div>
+        {entry.kind === "insights" || entry.image ? (
+          <DetailHeroVisual image={entry.image} imageAlt={entry.imageAlt || entry.title} />
         ) : null}
         <ContentRenderer body={entry.body} />
         {related.length ? (
@@ -85,6 +78,7 @@ export function DetailPage({
               "@type": "BlogPosting",
               headline: entry.title,
               description: entry.summary,
+              ...(entry.image ? { image: entry.image } : {}),
               url: new URL(entry.href, process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").toString(),
               ...(publishedDate ? { datePublished: publishedDate } : {}),
               ...(updatedDate ? { dateModified: updatedDate } : {}),

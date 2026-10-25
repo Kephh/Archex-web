@@ -1,0 +1,28 @@
+---
+title: Healthcare & Wellness Operations
+slug: healthcare-wellness-operations
+summary: Streamlined scheduling, intake workflows, and operational communication tools built with strict data privacy boundaries and clear audit controls.
+category: Industry pattern
+tags: [healthcare-operations, scheduling, patient-intake, privacy]
+status: published
+featured: false
+---
+
+## Operating context
+
+Healthcare clinics, wellness providers, and specialized care operations depend on smooth scheduling, accurate intake documentation, and reliable communication between staff and clients. Operational staff frequently manage complex calendars, cancellation queues, and pre-visit questionnaires under demanding time constraints.
+
+Software engineering in this field requires strict attention to data classification, minimal data retention, and defensive access boundaries.
+
+## Recurring engineering challenges
+
+- **Self-service appointment scheduling:** Managing practitioner availability, room bookings, appointment types, and automated rescheduling rules without double-bookings.
+- **Digital patient intake:** Capturing questionnaires, consent forms, and medical histories through secure, mobile-friendly forms prior to consultations.
+- **Defensive data architecture:** Segregating operational metadata (dates, times, contact numbers) from sensitive health documentation, enforcing role-based permissions and encrypted storage.
+- **Automated reminders and notifications:** Sending reliable SMS and email appointment reminders while respecting patient communication preferences and privacy limits.
+
+## Practical engineering approach
+
+We build operational scheduling interfaces, patient intake portals, and internal coordination tools. Architecture is guided by the principle of least privilege, auditable administrative actions, and explicit consent handling.
+
+*Important Disclaimer: This page discusses operational and administrative tooling patterns. Archex does not claim clinical certifications, HIPAA/HITRUST accreditation, or medical advisory capabilities on this page.*

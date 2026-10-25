@@ -10,7 +10,12 @@ export type ContentRailItem = {
   body: string;
   href: string;
   meta?: string;
+  image?: string;
+  imageAlt?: string;
 };
+
+
+import { cn } from "@/lib/utils";
 
 export function ContentRail({
   eyebrow,
@@ -18,7 +23,8 @@ export function ContentRail({
   description,
   viewAllHref,
   viewAllLabel = "View all",
-  items
+  items,
+  className
 }: {
   eyebrow: string;
   title: string;
@@ -26,6 +32,7 @@ export function ContentRail({
   viewAllHref?: string;
   viewAllLabel?: string;
   items: ContentRailItem[];
+  className?: string;
 }) {
   const railRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<"start" | "middle" | "end">("start");
@@ -51,7 +58,7 @@ export function ContentRail({
   }
 
   return (
-    <section className="content-rail overflow-hidden border-y border-border py-16 sm:py-20">
+    <section className={cn("content-rail overflow-hidden border-y border-border py-12 sm:py-16", className)}>
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div className="max-w-2xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-olive">{eyebrow}</p>
@@ -96,32 +103,7 @@ export function ContentRail({
         className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-width:thin]"
       >
         {items.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            data-rail-card
-            className="group flex min-h-[23rem] w-[min(82vw,27rem)] shrink-0 snap-start flex-col border border-border bg-surface p-6 transition-colors hover:border-forest focus-visible:border-forest sm:min-h-[25rem] sm:p-7"
-          >
-            <div className="relative mb-8 flex min-h-28 items-end overflow-hidden bg-surface-muted p-4">
-              <div className="absolute inset-4 border border-olive/50" />
-              <div className="absolute right-5 top-5 h-12 w-12 rounded-full border border-olive/60 transition-transform duration-300 group-hover:translate-x-2" />
-              <p className="relative font-mono text-[11px] uppercase tracking-[0.18em] text-olive">
-                {item.eyebrow}
-              </p>
-            </div>
-            <h3 className="text-2xl font-semibold leading-tight tracking-[-0.02em]">
-              {item.title}
-            </h3>
-            <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted">{item.body}</p>
-            <div className="mt-auto flex items-center justify-between gap-4 pt-6 text-sm font-semibold text-forest">
-              <span>{item.meta || "Explore"}</span>
-              <ArrowUpRight
-                size={18}
-                className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
-                aria-hidden="true"
-              />
-            </div>
-          </Link>
+          <RailCard key={item.href} item={item} />
         ))}
       </div>
       <div className="mt-2 h-px bg-border">
@@ -140,3 +122,50 @@ export function ContentRail({
     </section>
   );
 }
+
+function RailCard({ item }: { item: ContentRailItem }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = item.image && !imageFailed;
+
+  return (
+    <Link
+      href={item.href}
+      data-rail-card
+      className="group flex min-h-[23rem] w-[min(82vw,27rem)] shrink-0 snap-start flex-col border border-border bg-surface p-6 transition-colors hover:border-forest focus-visible:border-forest sm:min-h-[25rem] sm:p-7"
+    >
+      <div className="relative mb-8 flex min-h-28 items-end overflow-hidden bg-surface-muted p-4">
+        {showImage ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={item.image}
+            alt={item.imageAlt || ""}
+            loading="lazy"
+            onError={() => setImageFailed(true)}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <>
+            <div className="absolute inset-4 border border-olive/50" />
+            <div className="absolute right-5 top-5 h-12 w-12 rounded-full border border-olive/60 transition-transform duration-300 group-hover:translate-x-2" />
+          </>
+        )}
+        <p className="relative font-mono text-[11px] uppercase tracking-[0.18em] text-olive">
+          {item.eyebrow}
+        </p>
+      </div>
+      <h3 className="text-2xl font-semibold leading-tight tracking-[-0.02em]">
+        {item.title}
+      </h3>
+      <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted">{item.body}</p>
+      <div className="mt-auto flex items-center justify-between gap-4 pt-6 text-sm font-semibold text-forest">
+        <span>{item.meta || "Explore"}</span>
+        <ArrowUpRight
+          size={18}
+          className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+          aria-hidden="true"
+        />
+      </div>
+    </Link>
+  );
+}
+

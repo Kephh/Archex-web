@@ -27,7 +27,13 @@ function RequiredMark() {
   );
 }
 
-export function EnquiryForm({ compact = false }: { compact?: boolean }) {
+export function EnquiryForm({
+  compact = false,
+  id = "enquiry-form"
+}: {
+  compact?: boolean;
+  id?: string;
+}) {
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const {
     register,
@@ -65,6 +71,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
 
   return (
     <form
+      id={id}
       onSubmit={handleSubmit(onSubmit)}
       className="grid gap-5 rounded-md border border-border bg-surface p-5 sm:p-7"
       noValidate
